@@ -7,12 +7,12 @@ import useCreateWallet from "@/utils/wallet";
 export default function Home() {
 
   const [ clicked, setClicked ] = useState(false);
+  const [count, setCount] = useState(0);
   const [wallet, setWallet] = useState({ mnemonic: "", publicKey: "", privateKey: "" });
   const [inputValue, setInputValue] = useState('');
 
 
   const {createWallet} = useCreateWallet();
-  let count = 0;
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value); // Update input value state on change
@@ -23,7 +23,7 @@ export default function Home() {
     
     const {mnemonic, publicKey, privateKey} = createWallet(inputValue, count);
     setWallet({ mnemonic, publicKey, privateKey });
-    count += 1;
+    setCount(count + 1);
   }
 
   return (
@@ -51,8 +51,23 @@ export default function Home() {
 
         </div>
           {clicked && (
-            <div>
-              <h1>Seed: {wallet.mnemonic}</h1>
+            <div className="flex flex-col px-2">
+              <div className="p-5 pb-20 rounded-md border-[1px] border-white/20 shadow-white">
+                <h1 className="font-bold text-3xl mb-5">Your secret phrase</h1>
+                <div className="flex flex-wrap gap-4">
+                  {wallet.mnemonic.split(' ').map((element, index)=>(
+                    <h1 key={index} className="text-xl font-[300] px-4 py-4 w-[20vw] rounded-md bg-[#151515] hover:bg-white/10 transition-all">{element}</h1>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <h1 className="font-bold text-4xl py-10">Solana Wallet</h1>
+                <div>  
+                  <button className="text-black bg-white/90 px-4 py-2 rounded-md">Add Wallet</button>
+                  <button className="bg-red-700/90 px-4 py-2 rounded-md ml-4">Clear Wallets</button>
+                </div>
+              </div>
               <h1>Public Key: {wallet.publicKey}</h1>
               <h1>Private Key: {wallet.privateKey}</h1>
             </div>
