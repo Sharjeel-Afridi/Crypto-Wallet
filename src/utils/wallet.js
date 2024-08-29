@@ -7,8 +7,7 @@ import bs58 from "bs58";
 export default function useCreateWallet(){
 
     function createWallet(phrase, count){
-        console.log(phrase, count);
-        console.log('function call');
+        
         let mnemonic;
         if(phrase === ''){
             mnemonic = generateMnemonic();

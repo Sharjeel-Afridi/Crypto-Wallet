@@ -4,6 +4,8 @@ import Navbar from "@/components/Navbar";
 import { useState } from "react";
 import useCreateWallet from "@/utils/wallet";
 import copy from "../../public/copy.png";
+import eye from "../../public/eye-white.png";
+import useBalance from "@/utils/accountDetails";
 
 
 export default function Home() {
@@ -13,29 +15,35 @@ export default function Home() {
   const [mnemonic, setMnemonic] = useState('');
   const [inputValue, setInputValue] = useState('');
   const [wallets, setWallets] = useState([]);
+  const [showKey, setShowKey] = useState(false);
+  
 
   const {createWallet} = useCreateWallet();
+  const {accountDetails} = useBalance();
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value); // Update input value state on change
   };
-
-  const handleGenerate = () => {
+  let newbalance;
+  const handleGenerate = async () => {
     setClicked(true);
     
     const {mnemonic, publicKey, privateKey} = createWallet(inputValue, count);
     setMnemonic(mnemonic);
+    const{balance} = await accountDetails(publicKey);
     setWallets(prevWallets => [
-      ...prevWallets, {'publicKey': publicKey, 'privateKey': privateKey}
+      ...prevWallets, {'publicKey': publicKey, 'privateKey': privateKey, 'balance': balance}
     ]);
+    
     setCount(count + 1);
   }
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     const {publicKey, privateKey} = createWallet(mnemonic, count);
     
+    const{balance} = await accountDetails(publicKey);
     setWallets(prevWallets => [
-      ...prevWallets, {'publicKey': publicKey, 'privateKey': privateKey}
+      ...prevWallets, {'publicKey': publicKey, 'privateKey': privateKey, 'balance': balance}
     ]);
     setCount(count + 1);
 
@@ -53,6 +61,10 @@ export default function Home() {
     setCount(0);
     setMnemonic('');
     setClicked(false);
+  }
+
+  const handleShowKey = () => {
+    setShowKey(!showKey);
   }
 
   return (
@@ -137,7 +149,17 @@ export default function Home() {
                         onClick={() => handleCopy(element.privateKey)}
                         className="w-[20px] h-fit rounded-md cursor-pointer "/>
                     </div>
-                    <p className="text-[1rem] mt-3 mb-5 text-gray-400 tracking-wide">{element.privateKey}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-[1rem] mt-3 mb-5 text-gray-400 tracking-wide">{showKey ? element.privateKey : '•'.repeat(element.privateKey.length)}</p>
+                      <Image
+                        src={eye}
+                        alt="eye"
+                        onClick={handleShowKey}
+                        className="w-[20px] h-fit rounded-full cursor-pointer"
+                      />
+
+                    </div>
+                    <p className="text-white text-3xl">{element.balance}</p>
                   </div>
                 </div>
               ))}
