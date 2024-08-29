@@ -19,7 +19,7 @@ export default function useBalance(){
             `${(await connection.getBalance(wallet)) / LAMPORTS_PER_SOL} SOL`,
         );
         
-        return {balance};
+        return balance;
     };
     return {accountDetails};
 }

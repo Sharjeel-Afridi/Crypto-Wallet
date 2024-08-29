@@ -6,7 +6,7 @@ import useCreateWallet from "@/utils/wallet";
 import copy from "../../public/copy.png";
 import eye from "../../public/eye-white.png";
 import useBalance from "@/utils/accountDetails";
-
+import Wallet from "../../public/wallet-white.png";
 
 export default function Home() {
 
@@ -16,7 +16,8 @@ export default function Home() {
   const [inputValue, setInputValue] = useState('');
   const [wallets, setWallets] = useState([]);
   const [showKey, setShowKey] = useState(false);
-  
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
 
   const {createWallet} = useCreateWallet();
   const {accountDetails} = useBalance();
@@ -24,16 +25,23 @@ export default function Home() {
   const handleInputChange = (e) => {
     setInputValue(e.target.value); // Update input value state on change
   };
-  let newbalance;
+  
   const handleGenerate = async () => {
-    setClicked(true);
+    
     
     const {mnemonic, publicKey, privateKey} = createWallet(inputValue, count);
     setMnemonic(mnemonic);
-    const{balance} = await accountDetails(publicKey);
-    setWallets(prevWallets => [
-      ...prevWallets, {'publicKey': publicKey, 'privateKey': privateKey, 'balance': balance}
-    ]);
+
+    accountDetails(publicKey)
+    .then(balance => {
+      
+      setWallets(prevWallets => [
+        ...prevWallets,
+        { 'publicKey': publicKey, 'privateKey': privateKey, 'balance': balance }
+      ]);
+      setClicked(true);
+    })
+    console.log(wallets);
     
     setCount(count + 1);
   }
@@ -41,10 +49,15 @@ export default function Home() {
   const handleAdd = async () => {
     const {publicKey, privateKey} = createWallet(mnemonic, count);
     
-    const{balance} = await accountDetails(publicKey);
-    setWallets(prevWallets => [
-      ...prevWallets, {'publicKey': publicKey, 'privateKey': privateKey, 'balance': balance}
-    ]);
+    accountDetails(publicKey)
+    .then(balance => {
+      
+      setWallets(prevWallets => [
+        ...prevWallets,
+        { 'publicKey': publicKey, 'privateKey': privateKey, 'balance': balance }
+      ]);
+      setClicked(true);
+    })
     setCount(count + 1);
 
   }
@@ -67,10 +80,15 @@ export default function Home() {
     setShowKey(!showKey);
   }
 
+  const handleIndex = (index) => {
+    setSelectedIndex(index);
+  }
+
   return (
     <main className="min-h-screen ">
+      {!clicked ? (
+      <>
       <Navbar />
-      {!clicked && (
       <div className="flex flex-col pt-[10vh] px-4 gap-4">
         
         <h1 className="text-5xl font-bold">Secret Recovery Phrase</h1>
@@ -91,10 +109,37 @@ export default function Home() {
           </button>
         </div>
          </div>
-        )}
-          {clicked && (
-            <div className="flex flex-col px-2">
-              <div className="p-10 mx-2 pb-20 rounded-md border-[1px] border-white/20 shadow-white">
+        </>
+        ) :
+          (<>
+            <div className="h-screen fixed flex flex-col gap-2 left-0  w-[10vw] pt-[5vh] border-r-[1px] border-white/20">
+                {/* <h1 className="font-bold text-2xl text-center">Ba2अ</h1> */}
+                <Image src={Wallet} alt="wallet" className="w-[30px] h-fit mx-auto"/>
+                <div className="overflow-y-scroll">
+                  {wallets.map((element,index)=> (
+                    <h1 key={index} onClick={() => setSelectedIndex(index)} className="cursor-pointer hover:bg-[#151515] font-medium h-fit w-full text-center border-b-[1px] border-white py-4">Account {index+1}</h1>
+                  ))}
+                </div>
+                
+                <div className="flex flex-col items-center gap-5 mt-10 mb-5">  
+                  <button 
+                    onClick={handleAdd}
+                    className="w-[90%] text-black bg-white/90 px-4 py-2 rounded-md"
+                  >
+                    Add Wallet
+                  </button>
+                  <button 
+                    onClick={handleClear}
+                    className="w-[90%] bg-red-700/90 px-4 py-2 rounded-md"
+                  >
+                    Clear
+                  </button>
+                </div>
+        </div>
+
+        <div className="flex flex-col items-center w-[90vw] pl-[15vw]">
+            
+            <div className="w-[80vw] p-10 mt-10 pb-20 rounded-md border-[1px] border-white/20 shadow-white">
                 <div className="flex items-center justify-between mb-10">
                   <h1 className="font-bold text-3xl ">Your secret phrase</h1>
                   <Image 
@@ -105,33 +150,16 @@ export default function Home() {
                 </div>
                 <div className="grid grid-cols-4 gap-2 ">
                   {mnemonic.split(' ').map((element, index)=>(
-                    <h1 key={index} className="grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 justify-center items-center text-lg font-[300] p-4 rounded-lg bg-[#151515] hover:bg-white/10 transition-all">{element}</h1>
-                  ))}
+                      <h1 key={index} className="grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 justify-center items-center text-lg font-[300] p-4 rounded-lg bg-[#151515] hover:bg-white/40 transition-all">{element}</h1>
+                    ))}
                 </div>
               </div>
-              
-              <div className="flex justify-between items-center">
-                <h1 className="font-bold text-4xl py-10">Solana Wallet</h1>
-                <div>  
-                  <button 
-                    onClick={handleAdd}
-                    className="text-black bg-white/90 px-4 py-2 rounded-md"
-                  >
-                    Add Wallet
-                  </button>
-                  <button 
-                    onClick={handleClear}
-                    className="bg-red-700/90 px-4 py-2 rounded-md ml-4"
-                  >
-                    Clear Wallets
-                  </button>
-                </div>
-              </div>
-
-              {wallets.map((element,index)=>(
-                <div key={index} className="mb-10 rounded-3xl border-[1px] border-white/20 shadow-white">
-                  <h1 className="p-6 font-medium text-3xl mb-5">Wallet {index+1}</h1>
-                  <div className="bg-[#151515] p-6 rounded-3xl">
+            <div className="flex flex-col items-center w-[80vw] my-10 rounded-3xl border-[1px] border-white/20">
+                    <div className="flex flex-col h-[20vh] justify-center items-center w-full bg-[#151515] rounded-t-3xl">
+                        <p className="text-white text-3xl font-bold">${wallets[selectedIndex].balance}</p>
+                        <p className="text-gray-400">Account {selectedIndex+1}</p>
+                    </div>
+                  <div className="flex flex-col w-full p-6">
                     <div className="flex items-center gap-5">
                       <h1 className="font-medium text-2xl">Public Key</h1>
                       <Image 
@@ -140,7 +168,7 @@ export default function Home() {
                         onClick={() => handleCopy(element.publicKey)}
                         className="w-[20px] h-fit rounded-md cursor-pointer "/>
                     </div>
-                    <p className="text-[1rem] mt-3 mb-5 text-gray-400 tracking-wide">{element.publicKey}</p>
+                    <p className="text-[1rem] mt-3 mb-5 text-gray-400 tracking-wide">{wallets[selectedIndex].publicKey}</p>
                     <div className="flex items-center gap-5">
                       <h1 className="font-medium text-2xl">Private Key</h1>
                       <Image 
@@ -150,20 +178,20 @@ export default function Home() {
                         className="w-[20px] h-fit rounded-md cursor-pointer "/>
                     </div>
                     <div className="flex items-center justify-between">
-                      <p className="text-[1rem] mt-3 mb-5 text-gray-400 tracking-wide">{showKey ? element.privateKey : '•'.repeat(element.privateKey.length)}</p>
+                      <p className="text-[1rem] mt-3 mb-5 text-gray-400 tracking-wide">{showKey ? wallets[selectedIndex].privateKey : '•'.repeat(wallets[selectedIndex].privateKey.length)}</p>
                       <Image
                         src={eye}
                         alt="eye"
-                        onClick={handleShowKey}
+                        onClick={()=> setShowKey(!showKey)}
                         className="w-[20px] h-fit rounded-full cursor-pointer"
-                      />
+                        />
 
                     </div>
-                    <p className="text-white text-3xl">{element.balance}</p>
+                    
                   </div>
                 </div>
-              ))}
-            </div>
+        </div>
+        </>
           )}
      
     </main>
