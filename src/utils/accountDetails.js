@@ -14,10 +14,10 @@ export default function useBalance(){
         
         let wallet = new PublicKey(publicKey);
         let balance = await connection.getBalance(wallet) / LAMPORTS_PER_SOL;
-        console.log(balance);
-        console.log(
-            `${(await connection.getBalance(wallet)) / LAMPORTS_PER_SOL} SOL`,
-        );
+        
+        // console.log(
+        //     `${(await connection.getBalance(wallet)) / LAMPORTS_PER_SOL} SOL`,
+        // );
         
         return balance;
     };

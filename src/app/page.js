@@ -7,6 +7,8 @@ import copy from "../../public/copy.png";
 import eye from "../../public/eye-white.png";
 import useBalance from "@/utils/accountDetails";
 import Wallet from "../../public/wallet-white.png";
+import useAirdrop from "@/utils/requestAirdrop";
+
 
 export default function Home() {
 
@@ -17,10 +19,11 @@ export default function Home() {
   const [wallets, setWallets] = useState([]);
   const [showKey, setShowKey] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-
+  const [option, setOption] = useState('keys');
 
   const {createWallet} = useCreateWallet();
   const {accountDetails} = useBalance();
+  const {airdrop} = useAirdrop();
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value); // Update input value state on change
@@ -82,6 +85,10 @@ export default function Home() {
 
   const handleIndex = (index) => {
     setSelectedIndex(index);
+  }
+
+  const handleAirdrop = async (publickey) => {
+    await airdrop(publickey)
   }
 
   return (
@@ -157,39 +164,103 @@ export default function Home() {
               </div>
             <div className="flex flex-col items-center w-[80vw] my-10 rounded-3xl border-[1px] border-white/20">
                     <div className="flex flex-col h-[20vh] justify-center items-center w-full bg-[#151515] rounded-t-3xl">
-                        <p className="text-white text-3xl font-bold">${wallets[selectedIndex].balance}</p>
+                        <p className="text-white text-3xl font-bold">${wallets[selectedIndex].balance} SOL</p>
                         <p className="text-gray-400">Account {selectedIndex+1}</p>
                     </div>
-                  <div className="flex flex-col w-full p-6">
-                    <div className="flex items-center gap-5">
-                      <h1 className="font-medium text-2xl">Public Key</h1>
-                      <Image 
-                        src={copy} 
-                        alt="copy" 
-                        onClick={() => handleCopy(element.publicKey)}
-                        className="w-[20px] h-fit rounded-md cursor-pointer "/>
-                    </div>
-                    <p className="text-[1rem] mt-3 mb-5 text-gray-400 tracking-wide">{wallets[selectedIndex].publicKey}</p>
-                    <div className="flex items-center gap-5">
-                      <h1 className="font-medium text-2xl">Private Key</h1>
-                      <Image 
-                        src={copy} 
-                        alt="copy" 
-                        onClick={() => handleCopy(element.privateKey)}
-                        className="w-[20px] h-fit rounded-md cursor-pointer "/>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <p className="text-[1rem] mt-3 mb-5 text-gray-400 tracking-wide">{showKey ? wallets[selectedIndex].privateKey : '•'.repeat(wallets[selectedIndex].privateKey.length)}</p>
-                      <Image
-                        src={eye}
-                        alt="eye"
-                        onClick={()=> setShowKey(!showKey)}
-                        className="w-[20px] h-fit rounded-full cursor-pointer"
-                        />
 
+                    <div className="flex justify-center w-full gap-10 py-2 mt-5">
+                      <h1 
+                        className={`${option === 'keys' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/90 rounded-xl'} text-black px-4 py-2 rounded-xl cursor-pointer`}
+                        onClick={()=> setOption('keys')}> 
+                        Keys
+                      </h1>
+                      <h1 
+                        className={`${option === 'send' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/90 rounded-xl'} text-black px-4 py-2 rounded-xl cursor-pointer`}
+                        onClick={()=> setOption('send')}> 
+                        Send
+                      </h1>
+                      <h1 
+                        className={`${option === 'airdrop' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/90 rounded-xl'} text-black px-4 py-2 border-[1px] border-black/50  cursor-pointer`}
+                        onClick={()=> setOption('airdrop')}
+                      > 
+                        Request Airdrop
+                      </h1>
                     </div>
-                    
-                  </div>
+
+                  {/* Keys */}
+                  {option === 'keys' ? (
+                    <div className="flex flex-col w-full p-6">
+                      <div className="flex items-center gap-5">
+                        <h1 className="font-medium text-2xl">Public Key</h1>
+                        <Image 
+                          src={copy} 
+                          alt="copy" 
+                          onClick={() => handleCopy(element.publicKey)}
+                          className="w-[20px] h-fit rounded-md cursor-pointer "/>
+                      </div>
+                      <p className="text-[1rem] mt-3 mb-5 text-gray-400 tracking-wide">{wallets[selectedIndex].publicKey}</p>
+                      <div className="flex items-center gap-5">
+                        <h1 className="font-medium text-2xl">Private Key</h1>
+                        <Image 
+                          src={copy} 
+                          alt="copy" 
+                          onClick={() => handleCopy(element.privateKey)}
+                          className="w-[20px] h-fit rounded-md cursor-pointer "/>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <p className="text-[1rem] mt-3 mb-5 text-gray-400 tracking-wide">{showKey ? wallets[selectedIndex].privateKey : '•'.repeat(wallets[selectedIndex].privateKey.length)}</p>
+                        <Image
+                          src={eye}
+                          alt="eye"
+                          onClick={()=> setShowKey(!showKey)}
+                          className="w-[20px] h-fit rounded-full cursor-pointer"
+                          />
+
+                      </div>
+                      
+                    </div>
+                  ): option === 'send' ? (
+                    <div className="flex flex-col items-center w-full gap-5 p-6">
+                      
+                      <input
+                        className="bg-[#151515] p-4 rounded-md w-full text-lg"
+                        placeholder="Reciepents Solana Address"
+                      />
+                      <div className="flex justify-between bg-[#151515] p-4 rounded-md w-full">
+
+                        <input
+                          className="text-lg bg-transparent w-full focus:outline-none"
+                          placeholder="Amount"
+                          />
+                          <h1 className="text-white/40">SOL</h1>
+                        </div>
+                      <button className="bg-white text-black w-fit px-10 py-2 rounded-md">
+                        Send
+                      </button>
+                    </div>
+
+                  ) : (
+                    <div className="flex flex-col items-center w-full gap-5 p-6">
+                      <div className="flex justify-between bg-[#151515] p-4 rounded-md w-full">
+                        <input
+                          className="text-lg bg-transparent w-full focus:outline-none"
+                          placeholder="Amount"
+                          />
+                        <h1 className="text-white/40">SOL</h1>
+                      </div>
+                      <button 
+                        className="bg-white text-black w-fit px-10 py-2 rounded-md"
+                        onClick={() => {
+                          handleAirdrop(wallets[selectedIndex].publicKey);
+                          
+                        }}>
+                        Request
+                      </button>
+                    </div>
+                  )}
+                  
+
+                  
                 </div>
                 <h1 className="text-lg pb-10 font-medium">Developed by <a className="font-normal" href="https://github.com/sharjeel-afridi/crypto-wallet" target="_blank">Sharjeel Afridi</a></h1>
         </div>
