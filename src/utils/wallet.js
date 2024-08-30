@@ -1,7 +1,12 @@
 import nacl from "tweetnacl";
 import { generateMnemonic, mnemonicToSeedSync } from "bip39";
 import { derivePath } from "ed25519-hd-key";
-import { Keypair } from "@solana/web3.js";
+import { 
+    Connection,
+    Keypair, 
+    Transaction,
+    sendAndConfirmTransaction,
+   } from "@solana/web3.js";
 import bs58 from "bs58"; 
 
 export default function useCreateWallet(){
@@ -28,5 +33,26 @@ export default function useCreateWallet(){
         return {mnemonic, publicKey, privateKey}  
     }
 
-    return {createWallet}
+    async function sendSol(publicKey, lamportsToSend){
+        
+
+        const connection = new Connection(
+            "https://api.devnet.solana.com",
+            "confirmed",
+          );
+        
+        const transferTransaction = new Transaction().add(
+            SystemProgram.transfer({
+              fromPubkey: publicKey,
+              toPubkey: publicKey,
+              lamports: lamportsToSend,
+            }),
+          );
+         
+          await sendAndConfirmTransaction(connection, transferTransaction, [
+            fromKeypair,
+          ]);
+    }
+
+    return {createWallet, sendSol}
 }

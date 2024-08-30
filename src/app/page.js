@@ -170,17 +170,17 @@ export default function Home() {
 
                     <div className="flex justify-center w-full gap-10 py-2 mt-5">
                       <h1 
-                        className={`${option === 'keys' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/90 rounded-xl'} text-black px-4 py-2 rounded-xl cursor-pointer`}
+                        className={`${option === 'keys' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/70 hover:bg-white/90 rounded-xl'} text-black px-4 py-2 rounded-xl cursor-pointer`}
                         onClick={()=> setOption('keys')}> 
                         Keys
                       </h1>
                       <h1 
-                        className={`${option === 'send' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/90 rounded-xl'} text-black px-4 py-2 rounded-xl cursor-pointer`}
+                        className={`${option === 'send' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/70 hover:bg-white/90 rounded-xl'} text-black px-4 py-2 rounded-xl cursor-pointer`}
                         onClick={()=> setOption('send')}> 
                         Send
                       </h1>
                       <h1 
-                        className={`${option === 'airdrop' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/90 rounded-xl'} text-black px-4 py-2 border-[1px] border-black/50  cursor-pointer`}
+                        className={`${option === 'airdrop' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/70 hover:bg-white/90 rounded-xl'} text-black px-4 py-2 border-[1px] border-black/50  cursor-pointer`}
                         onClick={()=> setOption('airdrop')}
                       > 
                         Request Airdrop
@@ -195,7 +195,7 @@ export default function Home() {
                         <Image 
                           src={copy} 
                           alt="copy" 
-                          onClick={() => handleCopy(element.publicKey)}
+                          onClick={() => handleCopy(wallets[selectedIndex].publicKey)}
                           className="w-[20px] h-fit rounded-md cursor-pointer "/>
                       </div>
                       <p className="text-[1rem] mt-3 mb-5 text-gray-400 tracking-wide">{wallets[selectedIndex].publicKey}</p>
@@ -204,7 +204,7 @@ export default function Home() {
                         <Image 
                           src={copy} 
                           alt="copy" 
-                          onClick={() => handleCopy(element.privateKey)}
+                          onClick={() => handleCopy(wallets[selectedIndex].privateKey)}
                           className="w-[20px] h-fit rounded-md cursor-pointer "/>
                       </div>
                       <div className="flex items-center justify-between">
