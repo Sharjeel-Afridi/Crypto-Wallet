@@ -8,3 +8,11 @@
     text-wrap: balance;
   }
 }
+
+.scrollbar::-webkit-scrollbar{
+  width: 6px;
+}
+.scrollbar::-webkit-scrollbar-thumb{
+  border-radius: 10px;
+  background-color: rgb(49, 46, 46);
+}

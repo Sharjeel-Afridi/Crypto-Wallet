@@ -108,6 +108,7 @@ export default function Home() {
             Generate Wallet
           </button>
         </div>
+        <h1 className="text-lg pb-10 font-medium fixed bottom-0">Developed by <a className="font-normal" href="https://github.com/sharjeel-afridi/crypto-wallet" target="_blank">Sharjeel Afridi</a></h1>
          </div>
         </>
         ) :
@@ -115,7 +116,7 @@ export default function Home() {
             <div className="h-screen fixed flex flex-col gap-2 left-0  w-[10vw] pt-[5vh] border-r-[1px] border-white/20">
                 {/* <h1 className="font-bold text-2xl text-center">Ba2अ</h1> */}
                 <Image src={Wallet} alt="wallet" className="w-[30px] h-fit mx-auto"/>
-                <div className="overflow-y-scroll">
+                <div className="overflow-y-scroll scrollbar">
                   {wallets.map((element,index)=> (
                     <h1 key={index} onClick={() => setSelectedIndex(index)} className="cursor-pointer hover:bg-[#151515] font-medium h-fit w-full text-center border-b-[1px] border-white py-4">Account {index+1}</h1>
                   ))}
@@ -190,10 +191,11 @@ export default function Home() {
                     
                   </div>
                 </div>
+                <h1 className="text-lg pb-10 font-medium">Developed by <a className="font-normal" href="https://github.com/sharjeel-afridi/crypto-wallet" target="_blank">Sharjeel Afridi</a></h1>
         </div>
         </>
           )}
-     
+
     </main>
   );
 }
