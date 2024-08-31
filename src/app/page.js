@@ -8,7 +8,8 @@ import eye from "../../public/eye-white.png";
 import useBalance from "@/utils/accountDetails";
 import Wallet from "../../public/wallet-white.png";
 import useAirdrop from "@/utils/requestAirdrop";
-
+import SendSol from "@/components/SendSol";
+import Airdrop from "@/components/Airdrop";
 
 export default function Home() {
 
@@ -170,12 +171,12 @@ export default function Home() {
 
                     <div className="flex justify-center w-full gap-10 py-2 mt-5">
                       <h1 
-                        className={`${option === 'keys' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/70 hover:bg-white/90 rounded-xl'} text-black px-4 py-2 rounded-xl cursor-pointer`}
+                        className={`${option === 'keys' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/70 hover:bg-white/90 rounded-xl'} text-black px-4 py-2  cursor-pointer`}
                         onClick={()=> setOption('keys')}> 
                         Keys
                       </h1>
                       <h1 
-                        className={`${option === 'send' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/70 hover:bg-white/90 rounded-xl'} text-black px-4 py-2 rounded-xl cursor-pointer`}
+                        className={`${option === 'send' ? 'bg-white font-medium rounded-sm': 'font-normal bg-white/70 hover:bg-white/90 rounded-xl'} text-black px-4 py-2  cursor-pointer`}
                         onClick={()=> setOption('send')}> 
                         Send
                       </h1>
@@ -220,43 +221,9 @@ export default function Home() {
                       
                     </div>
                   ): option === 'send' ? (
-                    <div className="flex flex-col items-center w-full gap-5 p-6">
-                      
-                      <input
-                        className="bg-[#151515] p-4 rounded-md w-full text-lg"
-                        placeholder="Reciepents Solana Address"
-                      />
-                      <div className="flex justify-between bg-[#151515] p-4 rounded-md w-full">
-
-                        <input
-                          className="text-lg bg-transparent w-full focus:outline-none"
-                          placeholder="Amount"
-                          />
-                          <h1 className="text-white/40">SOL</h1>
-                        </div>
-                      <button className="bg-white text-black w-fit px-10 py-2 rounded-md">
-                        Send
-                      </button>
-                    </div>
-
+                    <SendSol wallets={wallets} selectedIndex={selectedIndex}/>
                   ) : (
-                    <div className="flex flex-col items-center w-full gap-5 p-6">
-                      <div className="flex justify-between bg-[#151515] p-4 rounded-md w-full">
-                        <input
-                          className="text-lg bg-transparent w-full focus:outline-none"
-                          placeholder="Amount"
-                          />
-                        <h1 className="text-white/40">SOL</h1>
-                      </div>
-                      <button 
-                        className="bg-white text-black w-fit px-10 py-2 rounded-md"
-                        onClick={() => {
-                          handleAirdrop(wallets[selectedIndex].publicKey);
-                          
-                        }}>
-                        Request
-                      </button>
-                    </div>
+                    <Airdrop wallets={wallets} selectedIndex={selectedIndex}/>
                   )}
                   
 

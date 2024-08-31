@@ -3,6 +3,8 @@ import { generateMnemonic, mnemonicToSeedSync } from "bip39";
 import { derivePath } from "ed25519-hd-key";
 import { 
     Connection,
+    PublicKey,
+    SystemProgram,
     Keypair, 
     Transaction,
     sendAndConfirmTransaction,
@@ -33,25 +35,30 @@ export default function useCreateWallet(){
         return {mnemonic, publicKey, privateKey}  
     }
 
-    async function sendSol(publicKey, lamportsToSend){
+    async function sendSol(recipientPublicKey, senderPrivateKey, amount){
         
+      const privateKeyArray = bs58.decode(senderPrivateKey);
+      const senderKeypair = Keypair.fromSecretKey(privateKeyArray);
+      
 
         const connection = new Connection(
             "https://api.devnet.solana.com",
             "confirmed",
           );
         
-        const transferTransaction = new Transaction().add(
+          const transaction = new Transaction().add(
             SystemProgram.transfer({
-              fromPubkey: publicKey,
-              toPubkey: publicKey,
-              lamports: lamportsToSend,
-            }),
+              fromPubkey: senderKeypair.publicKey,
+              toPubkey: new PublicKey(recipientPublicKey),
+              lamports: parseFloat(amount) * 1e9,
+            })
           );
-         
-          await sendAndConfirmTransaction(connection, transferTransaction, [
-            fromKeypair,
-          ]);
+        try{
+          const signature = await sendAndConfirmTransaction(connection, transaction, [senderKeypair]);
+          return signature;
+        } catch (error) {
+          return error.message;
+        } 
     }
 
     return {createWallet, sendSol}
